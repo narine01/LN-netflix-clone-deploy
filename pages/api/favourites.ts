@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 import prismadb from '@/lib/prismadb';
 import serverAuth from "@/lib/serverAuth";
+import { PrismaClient } from "@prisma/client";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -11,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const { currentUser } = await serverAuth(req, res);
 
-    const favoritedMovies = await prismadb.movie.findMany({
+    const favoritedMovies = await (prismadb as unknown as PrismaClient).movie.findMany({
       where: {
         id: {
           in: currentUser?.favouriteIds,

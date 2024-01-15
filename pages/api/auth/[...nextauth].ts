@@ -5,6 +5,7 @@ import Credentials from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { compare } from 'bcrypt';
 import prismadb from '@/lib/prismadb';
+import { PrismaClient } from '@prisma/client';
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -34,7 +35,7 @@ export const authOptions: AuthOptions = {
           throw new Error('Email and password required');
         }
 
-        const user = await prismadb.user.findUnique({ where: {
+        const user = await (prismadb as unknown as PrismaClient).user.findUnique({ where: {
           email: credentials.email
         }});
 
@@ -56,7 +57,7 @@ export const authOptions: AuthOptions = {
     signIn: '/auth'
   },
   debug: process.env.NODE_ENV === 'development',
-  adapter: PrismaAdapter(prismadb),
+  adapter: PrismaAdapter((prismadb as unknown as PrismaClient)),
   session: { strategy: 'jwt' },
   jwt: {
     secret: process.env.NEXTAUTH_JWT_SECRET,

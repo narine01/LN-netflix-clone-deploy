@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 import prismadb from '@/lib/prismadb';
 import serverAuth from "@/lib/serverAuth";
+import { PrismaClient } from "@prisma/client";
 
 export default async function handler(req:NextApiRequest, res:NextApiResponse) {
     if(req.method !== 'GET') return res.status(405).end();
@@ -19,7 +20,7 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
                 throw new Error('Invalid Id')
         }
 
-        const movie = await prismadb.movie.findUnique({
+        const movie = await (prismadb as unknown as PrismaClient).movie.findUnique({
             where:{
                 id: movieId
             }
